@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masroufi/Expense.dart';
 import 'package:masroufi/ex_list_widget.dart';
 import 'package:masroufi/new_ex_widget.dart';
+import 'package:masroufi/total_widget.dart';
 
 final List<Expense> allexpenses = [
   Expense(
@@ -17,7 +18,7 @@ final List<Expense> allexpenses = [
     date: DateTime.now(),
   )
 ];
-
+double totalExpenses = 0;
 void main() {
   runApp(const MyApp());
 }
@@ -61,13 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
-          Container(
-              width: double.infinity,
-              height: 100,
-              margin: const EdgeInsets.all(10),
-              child: const Card(
-                  elevation: 5,
-                  child: Center(child: Text('totalExpenses go here')))),
+          TotalWidget(totalExpenses: totalExpenses),
           ExListWidget(lex: expenseList, removeFunc: removeExpense)
         ],
       ),
@@ -87,11 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
           id: DateTime.now().toString(), title: t, amount: a, date: date);
       expenseList.add(e);
       Navigator.of(context).pop();
+      totalExpenses += a;
     });
   }
 
   void removeExpense({required String id}) {
     setState(() {
+      totalExpenses -=
+          expenseList.firstWhere((element) => element.id == id).amount;
       expenseList.removeWhere((element) => element.id == id);
     });
   }
