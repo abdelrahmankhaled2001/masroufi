@@ -13,46 +13,54 @@ class _NewExWidgetState extends State<NewExWidget> {
   final title = TextEditingController();
   final amount = TextEditingController();
   DateTime selectedDate = DateTime.utc(1970, 1, 1);
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          TextField(
-            decoration: const InputDecoration(labelText: 'Expense title'),
-            controller: title,
-          ),
-          TextField(
-              decoration: const InputDecoration(labelText: 'Amount in EGP'),
-              controller: amount),
-          Row(children: [
-            Expanded(
-                child: Text(selectedDate == DateTime.utc(1970, 1, 1)
-                    ? 'No Date chosen'
-                    : DateFormat.yMd().format(selectedDate))),
-            TextButton(
-              onPressed: openDatePicker,
-              child: const Text('Choose date please !'),
-            ),
+    return Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          height: MediaQuery.of(context).orientation == Orientation.portrait
+              ? 250
+              : double.infinity,
+          child: ListView(reverse: true, children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Expense title'),
+                  controller: title,
+                ),
+                TextField(
+                    decoration:
+                        const InputDecoration(labelText: 'Amount in EGP'),
+                    controller: amount),
+                Row(children: [
+                  Expanded(
+                      child: Text(selectedDate == DateTime.utc(1970, 1, 1)
+                          ? 'No Date chosen'
+                          : DateFormat.yMd().format(selectedDate))),
+                  TextButton(
+                    onPressed: openDatePicker,
+                    child: const Text('Choose date please !'),
+                  ),
+                ]),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.callBackFunc(
+                        t: title.text,
+                        a: double.parse(amount.text),
+                        date: selectedDate);
+                  },
+                  child: const Text(
+                    "submit",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            )
           ]),
-          ElevatedButton(
-            onPressed: () {
-              widget.callBackFunc(
-                  t: title.text,
-                  a: double.parse(amount.text),
-                  date: selectedDate);
-            },
-            child: const Text(
-              "submit",
-              style: TextStyle(fontSize: 20),
-            ),
-          )
-        ],
-      ),
-    );
+        ));
   }
 
   void openDatePicker() {
@@ -69,5 +77,9 @@ class _NewExWidgetState extends State<NewExWidget> {
         selectedDate = pickedDate;
       });
     });
+  }
+
+  void rernderNewTextField() {
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {}
   }
 }

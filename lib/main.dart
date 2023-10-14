@@ -60,11 +60,26 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: const Icon(Icons.add))
         ],
       ),
-      body: Column(
-        children: [
-          TotalWidget(totalExpenses: totalExpenses),
-          ExListWidget(lex: expenseList, removeFunc: removeExpense)
-        ],
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return orientation == Orientation.portrait
+              ? Column(
+                  children: [
+                    TotalWidget(
+                      totalExpenses: totalExpenses,
+                      portrait: true,
+                    ),
+                    ExListWidget(lex: expenseList, removeFunc: removeExpense)
+                  ],
+                )
+              : Row(children: [
+                  TotalWidget(
+                    totalExpenses: totalExpenses,
+                    portrait: false,
+                  ),
+                  ExListWidget(lex: expenseList, removeFunc: removeExpense)
+                ]);
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
@@ -97,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void showNewExpenseBottomSheet(BuildContext ctx) {
     showModalBottomSheet(
         context: ctx,
+        isScrollControlled: true,
         builder: (sheetContext) {
           return NewExWidget(callBackFunc: addNewExpense);
         });
