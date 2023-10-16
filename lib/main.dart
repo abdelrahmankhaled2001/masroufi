@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:masroufi/Expense.dart';
+import 'package:masroufi/expense.dart';
+import 'package:masroufi/day_expenses.dart';
 import 'package:masroufi/ex_list_widget.dart';
 import 'package:masroufi/new_ex_widget.dart';
 import 'package:masroufi/total_widget.dart';
 
-final List<Expense> allexpenses = [
+/*final List<Expense> allexpenses = [
   Expense(
     id: "e1",
     title: "Coffee",
@@ -17,7 +18,7 @@ final List<Expense> allexpenses = [
     amount: 14,
     date: DateTime.now(),
   )
-];
+];*/
 double totalExpenses = 0;
 void main() {
   runApp(const MyApp());
@@ -45,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Expense> expenseList = [];
+  final List<DayExpenses> expenseList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -91,21 +92,44 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void addNewExpense(
-      {required String t, required double a, required DateTime date}) {
+      {required String t,
+      required double a,
+      required DateTime date,
+      required Widget category,
+      required Color? color}) {
     setState(() {
       Expense e = Expense(
-          id: DateTime.now().toString(), title: t, amount: a, date: date);
-      expenseList.add(e);
+          id: DateTime.now().toString(),
+          title: t,
+          amount: a,
+          date: date,
+          category: category,
+          color: color);
+      if (expenseList
+          .where((element) => element.date.day == date.day)
+          .isNotEmpty) {
+        DayExpenses de =
+            expenseList.firstWhere((element) => element.date.day == date.day);
+        de.expenses.add(e);
+        de.total += a;
+      } else {
+        expenseList.add(DayExpenses(date: date, total: a, expenses: [e]));
+        expenseList.sort((a, b) => a.date.compareTo(b.date));
+      }
+
       Navigator.of(context).pop();
       totalExpenses += a;
     });
   }
 
-  void removeExpense({required String id}) {
+  void removeExpense({required Expense ex}) {
     setState(() {
-      totalExpenses -=
-          expenseList.firstWhere((element) => element.id == id).amount;
-      expenseList.removeWhere((element) => element.id == id);
+      totalExpenses -= ex.amount;
+      DayExpenses de =
+          expenseList.firstWhere((element) => element.date.day == ex.date.day);
+
+      de.expenses.removeWhere((element) => element.id == ex.id);
+      de.total -= ex.amount;
     });
   }
 
