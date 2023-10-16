@@ -20,6 +20,15 @@ import 'package:masroufi/total_widget.dart';
   )
 ];*/
 double totalExpenses = 0;
+final List<ChartData> chartData = [
+  ChartData("Food and Drinks", 0, Colors.green[200]),
+  ChartData("Transportation", 0, Colors.blue[200]),
+  ChartData("Clothes", 0, Colors.pink[200]),
+  ChartData("health", 0, Colors.red[200]),
+  ChartData("utilities", 0, Colors.orange[200]),
+  ChartData("Others", 0, Colors.blueGrey)
+];
+
 void main() {
   runApp(const MyApp());
 }
@@ -69,15 +78,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     TotalWidget(
                       totalExpenses: totalExpenses,
                       portrait: true,
+                      chartData: chartData,
                     ),
                     ExListWidget(lex: expenseList, removeFunc: removeExpense)
                   ],
                 )
               : Row(children: [
                   TotalWidget(
-                    totalExpenses: totalExpenses,
-                    portrait: false,
-                  ),
+                      totalExpenses: totalExpenses,
+                      portrait: false,
+                      chartData: chartData),
                   ExListWidget(lex: expenseList, removeFunc: removeExpense)
                 ]);
         },
@@ -119,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       Navigator.of(context).pop();
       totalExpenses += a;
+      chartData.firstWhere((element) => element.color == color).amount += a;
     });
   }
 
@@ -130,6 +141,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       de.expenses.removeWhere((element) => element.id == ex.id);
       de.total -= ex.amount;
+      if (de.total == 0) expenseList.remove(de);
+      chartData.firstWhere((element) => element.color == ex.color).amount -=
+          ex.amount;
     });
   }
 
@@ -141,4 +155,11 @@ class _MyHomePageState extends State<MyHomePage> {
           return NewExWidget(callBackFunc: addNewExpense);
         });
   }
+}
+
+class ChartData {
+  ChartData(this.category, this.amount, [this.color]);
+  final String category;
+  double amount;
+  final Color? color;
 }
